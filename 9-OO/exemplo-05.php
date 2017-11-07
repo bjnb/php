@@ -1,0 +1,9 @@
+<?php
+
+	/*
+		Declaração de classe
+	*/
+
+	
+
+?>
