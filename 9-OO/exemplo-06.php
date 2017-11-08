@@ -1,9 +1,45 @@
 <?php
 
 	/*
-		Declaração de classe
+		Encapsulamento
 	*/
+	class Pessoa {
 
+		public $nome = "Rasmus Lerdof";
+		protected $idade = 48;
+		private $senha = "123456";
+		
+		public function verDados() {
+
+			echo $this->nome . '<br>';
+			echo $this->idade . '<br>';
+			echo $this->senha . '<br>';
+
+		}
+	}
+
+	// Herança
+	class Programador extends Pessoa {
+
+		// Sobreescreve a função da classe herdada
+		public function verDados() {
+
+			echo get_class($this) . '<br><br>';
+
+			echo $this->nome . '<br>';
+			echo $this->idade . '<br>';
+
+			// Não herdado
+			echo $this->senha . '<br>';
+
+		}
+
+	}
 	
+	$p1 = new Programador();
+
+	// echo $p1->senha . '<br>';
+
+	$p1->verDados();
 
 ?>
