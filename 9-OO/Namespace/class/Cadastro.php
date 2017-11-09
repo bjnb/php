@@ -6,6 +6,10 @@
 		private $email;
 		private $senha;
 
+		public function __construct() {
+			echo 'Construtor class\Cadastro.php chamado!'.'<br><br>';
+		}
+
 		/*
 		public function get(): {
 			return $this->;

@@ -7,7 +7,7 @@
 	/*
 		Namespace definido dentro da pasta Cliente
 	*/
-	use Cliente\Cadastro;
+	use Cliente\Cadastro as Cadastro;
 
 
 	$cad = new Cadastro();
@@ -17,4 +17,5 @@
 	$cad->setSenha('123456');
 
 	$cad->registrarVenda();
+
  ?>
