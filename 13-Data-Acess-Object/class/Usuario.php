@@ -2,60 +2,33 @@
 
 	class Usuario {
 
-		private $ID;
-		private $login;
-		private $senha;
-		private $data_cadastro;
+		private $users;
 
 		// --------------------------------------------------------
 		//	SETs e GETs
 
 		public function getID():int {
-			return $this->ID;
-		}
-
-		private function setID( $ID ) {
-			$this->ID = $ID;
+			return current($this->users)['id'];
 		}
 
 		public function getLogin():string {
-			return $this->login;
-		}
-
-		private function setLogin( $login ) {
-			$this->login = $login;
+			return current($this->users)['login'];
 		}
 
 		public function getSenha():string {
-			return $this->senha;
+			return current($this->users)['senha'];
 		}
 
-		private function setSenha( $senha ) {
-			$this->senha = $senha;
+		public function getDataCadastro():string {
+			return current($this->users)['data_cadastro'];
 		}
 
-		public function getDataCadastro() {
-			return $this->data_cadastro;
+		public function getUsuario():array {
+			return current($this->users);
 		}
 
-		private function setDataCadastro( $data_cadastro ) {
-			$this->data_cadastro =  new DateTime( $data_cadastro );
-		}
-
-		public function getUsuario() {
-			return array(
-				'id' 	=> $this->getID(),
-				'login' => $this->getLogin(),
-				'senha' => $this->getSenha(),
-				'data_cadastro' => $this->getDataCadastro()->format("d/m/Y H:i:s")
-			);
-		}
-
-		private function getRow( $result ) {
-			$this->setID( $result[0]['id'] );
-			$this->setLogin( $result[0]['login'] );
-			$this->setSenha( $result[0]['senha'] );
-			$this->setDataCadastro( $result[0]['data_cadastro'] );
+		public function getUsuarios():array {
+			return $this->users;
 		}
 
 		// --------------------------------------------------------
@@ -65,54 +38,34 @@
 		// 	Funções públicas
 
 		public function searchById( $ID ):bool {
-
 			$sql = new Sql();
 
-			$result =  $sql->select( "SELECT * FROM tb_usuarios WHERE id = :ID", array( 
+			$this->users =  $sql->select( "SELECT * FROM tb_usuarios WHERE id = :ID", array( 
 				":ID" => $ID
 			));
 		
-			if ( $result ) {
-				$this->getRow( $result );
-				return true;		
-			} else {
-				return false;
-			}
-
+			return (count($this->users) == 1) ? true : false;
 		}
 
-
+		
 		public function searchByLogin( $login ):bool {
 			$sql = new Sql();
 
-			$result =  $sql->select( "SELECT * FROM tb_usuarios WHERE login = :LOGIN", array( 
+			$this->users =  $sql->select( "SELECT * FROM tb_usuarios WHERE login = :LOGIN", array( 
 				":LOGIN" => $login
 			));
 
-			if ( $result ) {
-				$this->getRow( $result );
-				return true;		
-			} else {
-				return false;
-			}
+			return (count($this->users) == 1) ? true : false;
 		}
+
 		
 		public function searchByUser( $login, $senha ):bool {
-
 			if ( $this->searchByLogin( $login ) ) {
-				$user = $this->getUsuario();
-
-				if ( $user['senha'] == $senha ) {
-					return true;
-				} else {
-					return false;
-				}
+				return ( $this->getSenha() == $senha ) ? true : false;
 			} else {
 				return false;
 			}
-
 		}
-		
 		
 
 		// --------------------------------------------------------
@@ -122,7 +75,7 @@
 		// 	Métodos mágicos
 		
 		public function __toString() {
-			return json_encode( $this->getUsuario() );
+			return json_encode( $this->getUsuarios() );
 		}
 		
 		// --------------------------------------------------------
