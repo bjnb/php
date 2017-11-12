@@ -23,9 +23,11 @@
 			return current($this->users)['data_cadastro'];
 		}
 
+		/*
 		public function getUsuario():array {
 			return current($this->users);
 		}
+		*/
 
 		public function getUsuarios():array {
 			return $this->users;
@@ -46,27 +48,34 @@
 		
 			return (count($this->users) == 1) ? true : false;
 		}
-
 		
-		public function searchByLogin( $login ):bool {
-			$sql = new Sql();
+		public function login( $login, $password ):bool {
 
-			$this->users =  $sql->select( "SELECT * FROM tb_usuarios WHERE login = :LOGIN", array( 
-				":LOGIN" => $login
-			));
+			$this->users =  (new Sql())->select( 
+				"SELECT * FROM tb_usuarios WHERE login = :LOGIN AND senha = :PASSWORD", 
+				array( 
+					":LOGIN" => $login,
+					":PASSWORD" => $password
+				)
+			);
 
 			return (count($this->users) == 1) ? true : false;
 		}
 
-		
-		public function searchByUser( $login, $senha ):bool {
-			if ( $this->searchByLogin( $login ) ) {
-				return ( $this->getSenha() == $senha ) ? true : false;
-			} else {
-				return false;
-			}
+		public static function getAll() {
+			return json_encode( (new Sql())->select( "SELECT * FROM tb_usuarios" ) );
 		}
-		
+
+		// Não recomendado buscar por ID pois é a chave primaria
+		// ao invés disso use searchById()
+		public static function search( $column, $search ) {
+			return json_encode( (new Sql())->select( 
+				"SELECT * FROM tb_usuarios WHERE ".$column." LIKE :SEARCH ORDER BY ".$column, 
+				array(
+					':SEARCH' => "%".$search."%"
+				)
+			));
+		}
 
 		// --------------------------------------------------------
 		

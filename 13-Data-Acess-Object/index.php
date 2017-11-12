@@ -18,21 +18,26 @@
 	
 	$user = new Usuario();
 
-
-	echo ( $user->searchById( 5 ) ) ? $user : 'Usuario não encontrado';
+	
+	echo ( $user->searchById( '5' ) ) ? $user : 'Usuario não encontrado';
 
 	echo '<br><br>';
-
+	
 
 	
-	echo ( $user->searchByLogin( 'bjnb1' ) ) ? $user : 'Usuario não encontrado';
+	/*
+	echo ( $user->login( 'bjnb2', '123456' ) ) ? $user : 'Usuario não encontrado';
 
 	echo '<br><br>';
+	*/
 
-	
-	echo ( $user->searchByUser( 'bjnb', '123' ) ) ? $user : 'Usuario não encontrado';
+	/*
+	echo Usuario::getAll();
 
 	echo '<br><br>';
+	*/
 
-	
+	echo Usuario::search( 'login', 'b' );
+
+	echo '<br><br>';
 ?>
