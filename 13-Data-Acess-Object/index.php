@@ -7,22 +7,31 @@
 
 	$usuarios = $sql->select("SELECT * FROM `tb_usuarios`");
 
-	if ( $usuarios ) {
-		var_dump( $usuarios );
-		echo '<br><br>';
-	} else {
-		echo "Não há dados!".'<br><br>';
-	}
+	echo $sql->update(
+		"UPDATE tb_usuarios SET login = :LOGIN, senha = :PASSWORD WHERE login = :LOGIN",
+		array(
+			':LOGIN'=> 'bjnb',
+			':PASSWORD'=> '123'
+	));
+	echo '<br><br>';
 	*/
-	
+
 	
 	$user = new Usuario();
 
 	
+	$user->login( 'bjnb6', '1234' );
+	echo $user;
+	echo '<br><br>';
+	
+
+	//echo $user->recuperarSenha( 'bjnb' );
+
+	/*
 	echo ( $user->searchById( '5' ) ) ? $user : 'Usuario não encontrado';
 
 	echo '<br><br>';
-	
+	*/
 
 	
 	/*
@@ -37,7 +46,9 @@
 	echo '<br><br>';
 	*/
 
-	echo Usuario::search( 'login', 'b' );
+	/*
+	echo Usuario::search( 'login', 'bjnb' );
 
 	echo '<br><br>';
+	*/
 ?>

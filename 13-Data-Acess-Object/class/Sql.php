@@ -31,12 +31,20 @@
 			return $this->statement->fetchAll( PDO::FETCH_ASSOC );
 		}
 
-		/*
+		
 		public function insert( $rowQuery, $params = array() ):int {
+			$this->setQuery( $rowQuery, $params );
 
+			return ( $this->statement->rowCount() == 1 ) ? 
+				$this->conn->lastInsertId() :  -1;
 		}
-		*/
 
+		public function update( $rowQuery, $params = array() ):bool {
+			$this->setQuery( $rowQuery, $params );
+
+			return ( $this->statement->rowCount() == 1 ) ? true : false;
+		}
+		
 		// ========================================================
 
 

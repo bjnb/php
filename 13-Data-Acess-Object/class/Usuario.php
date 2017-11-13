@@ -1,93 +1,174 @@
 <?php 
 
+	/*
+		
+	*/
+
 	class Usuario {
 
-		private $users;
+		private $user;
 
-		// --------------------------------------------------------
-		//	SETs e GETs
+		/////////////////////////////////////////////////////////////////////
+		////	SETs e GETs
 
 		public function getID():int {
-			return current($this->users)['id'];
+			return $this->user['id'];
 		}
 
 		public function getLogin():string {
-			return current($this->users)['login'];
+			return $this->user['login'];
 		}
 
 		public function getSenha():string {
-			return current($this->users)['senha'];
+			return $this->user['senha'];
 		}
 
 		public function getDataCadastro():string {
-			return current($this->users)['data_cadastro'];
+			return $this->user['data_cadastro'];
 		}
 
-		/*
 		public function getUsuario():array {
-			return current($this->users);
-		}
-		*/
-
-		public function getUsuarios():array {
-			return $this->users;
+			return $this->user;
 		}
 
-		// --------------------------------------------------------
+		private function setLogin( $login ) {
+			$this->user['login'] = $login;
+		}
 
-		
-		// --------------------------------------------------------
-		// 	Funções públicas
-
-		public function searchById( $ID ):bool {
-			$sql = new Sql();
-
-			$this->users =  $sql->select( "SELECT * FROM tb_usuarios WHERE id = :ID", array( 
-				":ID" => $ID
-			));
-		
-			return (count($this->users) == 1) ? true : false;
+		private function setSenha( $password ) {
+			$this->user['senha'] = $password;
 		}
 		
-		public function login( $login, $password ):bool {
 
-			$this->users =  (new Sql())->select( 
-				"SELECT * FROM tb_usuarios WHERE login = :LOGIN AND senha = :PASSWORD", 
-				array( 
-					":LOGIN" => $login,
-					":PASSWORD" => $password
-				)
-			);
+		/////////////////////////////////////////////////////////////////////
 
-			return (count($this->users) == 1) ? true : false;
+		
+		/////////////////////////////////////////////////////////////////////
+		////	Funções públicas
+
+		public function __construct() {
+			$this->user = array();
 		}
+
+		// ------------------------------------------------------
+
+		public function login( $login, $password ) {
+
+			$rows =  $this->searchByLogin( $login );
+
+			if ( count( $rows ) == 1 ) {
+				
+				if ( $rows[0]['senha'] == $password ) {
+					$this->user['id'] = $rows[0]['id'];
+					$this->user['login'] = $rows[0]['login'];
+					$this->user['password'] = $rows[0]['senha'];
+					$this->user['data_cadastro'] = $rows[0]['data_cadastro'];
+				} else {
+					throw new Exception("Password incorrect", 2);
+				}
+
+			} else if ( count($rows) == 0 ) {
+				throw new Exception("Login incorrect", 1);
+			}
+		}
+
+		// ------------------------------------------------------
+
+		public function signup( $login, $password ) {
+			
+			$rows = $this->searchByLogin( $login );
+
+			if ( count($rows) == 0 ) {
+
+				$ID = (new Sql())->insert( 
+					"INSERT INTO `tb_usuarios` (`login`, `senha`) VALUES (:LOGIN, :PASSWORD)", 
+					array( 
+						":LOGIN" => $login,
+						":PASSWORD" => $password
+					)
+				);
+
+				$this->login( $login, $password );
+
+			} else if ( count($rows) == 1 ) {
+				throw new Exception("Login is already registered", 3);
+			}
+		}
+
+		// ------------------------------------------------------
+
+		public function updateSenha( $senha ) {
+			//Função deve ser acessada somente após o login
+
+			if ( !((new Sql())->update(
+				"UPDATE tb_usuarios SET senha = :PASSWORD WHERE id = :ID",
+				array(
+					':ID'=> $this->getID(),
+					':PASSWORD'=> $senha
+			))) ) {
+				throw new Exception("Password update error", 4);
+			}
+		}
+		
+		// ------------------------------------------------------
+		// Função acessada para recuperar senha conhecendo o login
+
+		public function recuperarSenha( $login ):string {
+
+			$rows = $this->searchByLogin( $login );
+
+			if ( count( $rows ) == 1 ) {
+				return $rows[0]['senha'];
+			} else {
+				throw new Exception("Login incorrect", 1);
+			}
+		}
+
+		// ------------------------------------------------------
 
 		public static function getAll() {
-			return json_encode( (new Sql())->select( "SELECT * FROM tb_usuarios" ) );
+			return json_encode( 
+				(new Sql())->select( "SELECT * FROM tb_usuarios" ) 
+			);
 		}
 
+		// ------------------------------------------------------
 		// Não recomendado buscar por ID pois é a chave primaria
 		// ao invés disso use searchById()
+
 		public static function search( $column, $search ) {
-			return json_encode( (new Sql())->select( 
-				"SELECT * FROM tb_usuarios WHERE ".$column." LIKE :SEARCH ORDER BY ".$column, 
-				array(
-					':SEARCH' => "%".$search."%"
+			return json_encode( 
+				(new Sql())->select( 
+					"SELECT * FROM tb_usuarios WHERE ".$column." LIKE :SEARCH ORDER BY ".$column, 
+					array(
+						':SEARCH' => "%".$search."%"
+					)
 				)
-			));
+			);
 		}
 
-		// --------------------------------------------------------
+		// ------------------------------------------------------
+
+		public function searchByLogin( $login ):array {
+			return (new Sql())->select(
+				"SELECT * FROM tb_usuarios WHERE login = :LOGIN", 
+				array(
+					":LOGIN" => $login
+				)
+			);
+		}
+
+		/////////////////////////////////////////////////////////////////////
 		
 
-		// --------------------------------------------------------
-		// 	Métodos mágicos
+		/////////////////////////////////////////////////////////////////////
+		//// 	Métodos mágicos
 		
 		public function __toString() {
-			return json_encode( $this->getUsuarios() );
+			return json_encode( $this->getUsuario() );
 		}
 		
-		// --------------------------------------------------------
+		/////////////////////////////////////////////////////////////////////
 		
 	}
 
