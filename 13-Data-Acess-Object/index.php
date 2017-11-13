@@ -20,9 +20,13 @@
 	$user = new Usuario();
 
 	
-	$user->login( 'bjnb6', '1234' );
+	$user->login( 'bjnb', '123' );
 	echo $user;
 	echo '<br><br>';
+
+	//$user->updateSenha( '123' );
+
+	//$user->deletarUsuario();
 	
 
 	//echo $user->recuperarSenha( 'bjnb' );

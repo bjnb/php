@@ -39,12 +39,19 @@
 				$this->conn->lastInsertId() :  -1;
 		}
 
-		public function update( $rowQuery, $params = array() ):bool {
+		public function update( $rowQuery, $params = array() ):int {
 			$this->setQuery( $rowQuery, $params );
 
-			return ( $this->statement->rowCount() == 1 ) ? true : false;
+			return $this->statement->rowCount();
 		}
 		
+		public function delete( $rowQuery, $params = array() ):int {
+			$this->setQuery( $rowQuery, $params );
+
+			return $this->statement->rowCount();
+		}
+		
+
 		// ========================================================
 
 

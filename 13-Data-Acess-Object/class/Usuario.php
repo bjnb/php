@@ -96,17 +96,23 @@
 		}
 
 		// ------------------------------------------------------
+		// Função só pode ser acessada somente após o login
 
 		public function updateSenha( $senha ) {
-			//Função deve ser acessada somente após o login
 
-			if ( !((new Sql())->update(
-				"UPDATE tb_usuarios SET senha = :PASSWORD WHERE id = :ID",
-				array(
-					':ID'=> $this->getID(),
-					':PASSWORD'=> $senha
-			))) ) {
-				throw new Exception("Password update error", 4);
+			if ( isset($this->user['id']) ) {
+
+				if ( ((new Sql())->update(
+					"UPDATE tb_usuarios SET senha = :PASSWORD WHERE id = :ID",
+					array(
+						':ID'=> $this->getID(),
+						':PASSWORD'=> $senha
+				))) != 1 ) {
+					throw new Exception("Password update error", 4);
+				}
+
+			} else {
+				throw new Exception("Login required ", 5);
 			}
 		}
 		
@@ -122,6 +128,33 @@
 			} else {
 				throw new Exception("Login incorrect", 1);
 			}
+		}
+
+		// ------------------------------------------------------
+		// Função só pode ser acessada somente após o login
+
+		public function deletarUsuario() {
+
+			if ( isset($this->user['id']) ) {
+
+				if ( ((new Sql())->delete(
+					"DELETE FROM `tb_usuarios` WHERE `id` = :ID",
+					array(
+						':ID' => $this->getID()
+					)
+				)) == 1 ) {
+					unset($this->user['id']);
+					unset($this->user['login']);
+					unset($this->user['senha']);
+					unset($this->user['data_cadastro']);
+				} else {
+					throw new Exception("Delete error", 6);
+				}
+
+			} else {
+				throw new Exception("Login required ", 5);
+			}
+
 		}
 
 		// ------------------------------------------------------
